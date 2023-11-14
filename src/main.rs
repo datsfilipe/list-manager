@@ -1,25 +1,27 @@
-mod manager;
+mod args;
 mod list;
+mod manager;
 mod commands;
 mod database;
 
+use std::env;
+
 fn main() {
-    let mut manager = manager::Manager::new();
+    let mut _manager = manager::Manager::new();
 
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() == 1 {
-        commands::help();
+    let args: Vec<String> = env::args().collect();
+    if !args::validate_input(&args) {
         return;
     }
 
-    let command = &args[1];
-    if command == "help" {
-        commands::help();
-        return;
-    }
+    println!("args: {:?}", args);
 
-    if command == "add" {
+    match &args[1][..] {
+        "help" => commands::help(),
+        "add" => commands::add(&mut _manager, &args),
+        "remove" => commands::remove(&mut _manager, &args),
+        "edit" => commands::edit(&mut _manager, &args),
+        "list" => commands::list(&mut _manager, &args),
+        _ => println!("Invalid command"),
     }
-
-    commands::help();
 }

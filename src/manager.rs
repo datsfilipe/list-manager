@@ -1,5 +1,6 @@
 use crate::list;
 use crate::database;
+use chrono::prelude::*;
 
 pub struct Manager {
     pub lists: Vec<list::List>,
@@ -38,30 +39,55 @@ impl Manager {
         }
     }
 
-    pub fn add_list(&mut self, name: &str) -> &list::List {
+    pub fn add_list(&mut self, name: &str) {
+        self.db.add_list(name);
     }
 
-    // pub fn _add_item (&mut self, list_name: &str, item_content: &str) {
-    // }
-    //
-    // pub fn _remove_item (&mut self, list_name: &str, index: usize) {
-    // }
-    //
-    // pub fn _edit_item (&mut self, index: usize, new_content: &str, list_name: &str) {
-    // }
-    //
-    // pub fn _get_list_items(&self, name: &str) -> Option<Vec<list::Item>> {
-    // }
-    //
-    // pub fn _get_mut_list(&mut self, name: &str) -> Option<&mut list::List> {
-    // }
-    //
-    // pub fn _get_list_by_status(&self, name: &str, status: list::Status) -> Option<Vec<list::Item>> {
-    // }
-    //
-    // pub fn _get_lists(&self) -> &Vec<list::List> {
-    // }
-    //
-    // pub fn _remove_list(&mut self, index: usize) {
-    // }
+    pub fn add_item (&mut self, list_name: &str, item_content: &str) {
+        let lists = &self.lists;
+        let index = lists.iter().position(|list| list.name == list_name).unwrap();
+        let created_at = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+        let item = list::Item::new(item_content.to_string(), created_at, list::Status::Todo);
+
+        println!("item: {:?}", item);
+
+        self.db.add_item(&item.content, &item.created_at, &item.status.fmt(), index.try_into().unwrap());
+    }
+
+    pub fn remove_list(&mut self, name: &str) {
+        self.db.remove_list(name);
+    }
+
+    pub fn remove_item (&mut self, list_name: &str, content: &str) {
+        let lists = &self.lists;
+        let list_index = lists.iter().position(|list| list.name == list_name).unwrap();
+        self.db.remove_item(content, list_index.try_into().unwrap());
+    }
+
+    pub fn edit_list(&mut self, old_name: &str, new_name: &str) {
+        let index = self.lists.iter().position(|list| list.name == old_name).unwrap();
+        self.db.edit_list(index.try_into().unwrap(), new_name);
+    }
+
+    pub fn edit_item(&mut self, list_name: &str, new_status: &str, new_content: &str) {
+        let lists = &self.lists;
+        let list_index = lists.iter().position(|list| list.name == list_name).unwrap();
+        self.db.edit_item(list_index.try_into().unwrap(), new_content, new_status);
+    }
+
+    pub fn list_items(&self, name: &str) -> Vec<list::Item> {
+        self.db.get_list_items(name)
+    }
+
+    pub fn list_lists(&self) -> Vec<String> {
+        self.db.get_lists()
+    }
+
+    pub fn list_list_by_status(&self, name: &str, status: list::Status) -> Vec<list::Item> {
+        self.db.get_list_by_status(name, status)
+    }
+
+    pub fn get_item(&self, item_content: &str, list_index: usize) -> list::Item {
+        self.db.get_item(item_content, list_index.try_into().unwrap()).unwrap()
+    }
 }

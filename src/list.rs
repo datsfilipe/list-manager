@@ -1,4 +1,4 @@
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Clone, Debug)]
 pub enum Status {
     Todo,
     Doing,
@@ -24,13 +24,14 @@ impl Status {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Item {
     pub content: String,
     pub created_at: String,
     pub status: Status,
 }
 
+#[derive(Debug)]
 pub struct List {
     pub items: Vec<Item>,
     pub name: String,
