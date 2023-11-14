@@ -1,7 +1,5 @@
-const _PATH: &str = "/home/user/.config/list-manager";
 use crate::manager;
 use crate::list::Status;
-
 
 pub fn help () {
     println!("Usage: lm [command] [args]");
