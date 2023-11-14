@@ -14,8 +14,6 @@ fn main() {
         return;
     }
 
-    println!("args: {:?}", args);
-
     match &args[1][..] {
         "help" => commands::help(),
         "add" => commands::add(&mut _manager, &args),

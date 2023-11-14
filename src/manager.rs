@@ -48,9 +48,6 @@ impl Manager {
         let index = lists.iter().position(|list| list.name == list_name).unwrap();
         let created_at = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
         let item = list::Item::new(item_content.to_string(), created_at, list::Status::Todo);
-
-        println!("item: {:?}", item);
-
         self.db.add_item(&item.content, &item.created_at, &item.status.fmt(), index.try_into().unwrap());
     }
 
