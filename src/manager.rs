@@ -41,6 +41,11 @@ impl Manager {
     pub fn add_list(&mut self, name: &str) -> &list::List {
         let list = list::List::new(name.to_string(), Vec::new());
         self.lists.push(list);
+
+        let mut stmt = self.db.conn.prepare("INSERT INTO lists (name) VALUES (?)").unwrap();
+        stmt.execute([name]).unwrap();
+        stmt.finalize().unwrap();
+
         self.get_list(name).unwrap()
     }
 
@@ -48,17 +53,31 @@ impl Manager {
         let list = self.get_mut_list(list_name).unwrap();
         let item = list::Item::new(item_content.to_string(), "tmp".to_string(), list::Status::Todo);
         list.items.push(item);
+
+        let index = self.lists.iter().position(|list| list.name == list_name).unwrap();
+
+        let mut stmt = self.db.conn.prepare("INSERT INTO items (content, created_at, status, list_id) VALUES (?, ?, ?, ?)").unwrap();
+        stmt.execute([item_content, "tmp", "todo", format!("{}", index).as_str()]).unwrap();
+        stmt.finalize().unwrap();
     }
 
     pub fn remove_item (&mut self, list_name: &str, item_content: &str) {
         let list = self.get_mut_list(list_name).unwrap();
         list.items.retain(|item| item.content != item_content);
+
+        let mut stmt = self.db.conn.prepare("DELETE FROM items WHERE content = ?").unwrap();
+        stmt.execute([item_content]).unwrap();
+        stmt.finalize().unwrap();
     }
 
     pub fn edit_item (&mut self, list_name: &str, item_content: &str, new_content: &str) {
         let list = self.get_mut_list(list_name).unwrap();
         let item = list.items.iter_mut().find(|item| item.content == item_content).unwrap();
         item.content = new_content.to_string();
+
+        let mut stmt = self.db.conn.prepare("UPDATE items SET content = ? WHERE content = ?").unwrap();
+        stmt.execute([new_content, item_content]).unwrap();
+        stmt.finalize().unwrap();
     }
 
     pub fn get_list(&self, name: &str) -> Option<&list::List> {
@@ -79,5 +98,9 @@ impl Manager {
 
     pub fn remove_list(&mut self, name: &str) {
         self.lists.retain(|list| list.name != name);
+
+        let mut stmt = self.db.conn.prepare("DELETE FROM lists WHERE name = ?").unwrap();
+        stmt.execute([name]).unwrap();
+        stmt.finalize().unwrap();
     }
 }
