@@ -47,12 +47,7 @@ fn main() {
             }
         }
         if args.len() == 4 {
-            let status = match &args[3][..] {
-                "todo" => list::Status::Todo,
-                "doing" => list::Status::Doing,
-                "done" => list::Status::Done,
-                _ => panic!("Invalid status"),
-            };
+            let status = list::Status::from_str(&args[3]);
             commands::get_list_by_status(&manager, &args[2], status);
         }
     }

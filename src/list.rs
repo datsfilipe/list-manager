@@ -1,5 +1,3 @@
-use std::time::SystemTime;
-
 #[derive(PartialEq)]
 pub enum Status {
     Todo,
@@ -7,9 +5,28 @@ pub enum Status {
     Done,
 }
 
+impl Status {
+    pub fn from_str(status: &str) -> Status {
+        match status {
+            "todo" => Status::Todo,
+            "doing" => Status::Doing,
+            "done" => Status::Done,
+            _ => panic!("Invalid status"),
+        }
+    }
+
+    pub fn _fmt(&self) -> String {
+        match self {
+            Status::Todo => "todo".to_string(),
+            Status::Doing => "doing".to_string(),
+            Status::Done => "done".to_string(),
+        }
+    }
+}
+
 pub struct Item {
     pub content: String,
-    pub created_at: SystemTime,
+    pub created_at: String,
     pub status: Status,
 }
 
@@ -33,7 +50,7 @@ impl List {
 }
 
 impl Item {
-    pub fn new(content: String, created_at: SystemTime, status: Status) -> Item {
+    pub fn new(content: String, created_at: String, status: Status) -> Item {
         Item {
             content,
             created_at,
