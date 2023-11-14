@@ -1,6 +1,7 @@
 mod manager;
 mod list;
 mod commands;
+mod database;
 
 fn main() {
     let mut manager = manager::Manager::new();
