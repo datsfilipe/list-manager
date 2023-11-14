@@ -39,14 +39,6 @@ impl List {
     pub fn new(name: String, items: Vec<Item>) -> List {
         List { name, items }
     }
-
-    pub fn get_list(&self) -> &Vec<Item> {
-        &self.items
-    }
-
-    pub fn get_list_by_status(&self, status: Status) -> Vec<&Item> {
-        self.items.iter().filter(|item| item.status == status).collect()
-    }
 }
 
 impl Item {
@@ -56,9 +48,5 @@ impl Item {
             created_at,
             status,
         }
-    }
-
-    pub fn get_content(&self) -> &String {
-        &self.content
     }
 }

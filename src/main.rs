@@ -45,15 +45,15 @@ fn main() {
             let lists = commands::list(&manager);
             for list in lists {
                 println!("{}", list);
-                return;
             }
+            return;
         }
         if args.len() == 3 {
-            let list = manager.get_list(&args[2]).unwrap();
-            for item in list.get_list() {
-                println!("{}", item.get_content());
-                return;
+            let list = manager.get_list_items(&args[2]).unwrap();
+            for item in list {
+                println!("{}", item.content);
             }
+            return;
         }
         if args.len() == 4 {
             let status = list::Status::from_str(&args[3]);
