@@ -1,4 +1,4 @@
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 pub enum Status {
     Todo,
     Doing,
@@ -24,6 +24,7 @@ impl Status {
     }
 }
 
+#[derive(Clone)]
 pub struct Item {
     pub content: String,
     pub created_at: String,

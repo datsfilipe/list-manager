@@ -39,67 +39,29 @@ impl Manager {
     }
 
     pub fn add_list(&mut self, name: &str) -> &list::List {
-        let list = list::List::new(name.to_string(), Vec::new());
-        self.lists.push(list);
-
-        let mut stmt = self.db.conn.prepare("INSERT INTO lists (name) VALUES (?)").unwrap();
-        stmt.execute([name]).unwrap();
-        stmt.finalize().unwrap();
-
-        self.lists.last().unwrap()
     }
 
-    pub fn add_item (&mut self, list_name: &str, item_content: &str) {
-        let created_at = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-        let item = list::Item::new(item_content.to_string(), created_at, list::Status::Todo);
-        let index = self.lists.iter().position(|list| list.name == list_name).unwrap();
-
-        let mut stmt = self.db.conn.prepare("INSERT INTO items (content, created_at, status, list_id) VALUES (?, ?, ?, ?)").unwrap();
-        stmt.execute([item.content, item.created_at, item.status.fmt(), index.to_string()]).unwrap();
-        stmt.finalize().unwrap();
-    }
-
-    pub fn remove_item (&mut self, list_name: &str, index: usize) {
-        let list = self.get_mut_list(list_name).unwrap();
-        list.items.remove(index);
-
-        let mut stmt = self.db.conn.prepare("DELETE FROM items WHERE list_id = ? AND rowid = ?").unwrap();
-        stmt.execute([format!("{}", index).as_str(), format!("{}", index).as_str()]).unwrap();
-        stmt.finalize().unwrap();
-    }
-
-    pub fn edit_item (&mut self, index: usize, new_content: &str, list_name: &str) {
-        let list = self.get_mut_list(list_name).unwrap();
-        list.items[index].content = new_content.to_string();
-
-        let mut stmt = self.db.conn.prepare("UPDATE items SET content = ? WHERE rowid = ?").unwrap();
-        stmt.execute([new_content, format!("{}", index).as_str()]).unwrap();
-        stmt.finalize().unwrap();
-    }
-
-    pub fn get_list_items(&self, name: &str) -> Option<&Vec<list::Item>> {
-        self.lists.iter().find(|list| list.name == name).map(|list| &list.items)
-    }
-
-    pub fn get_mut_list(&mut self, name: &str) -> Option<&mut list::List> {
-        self.lists.iter_mut().find(|list| list.name == name)
-    }
-
-    pub fn get_list_by_status(&self, name: &str, status: list::Status) -> Option<Vec<&list::Item>> {
-        self.lists.iter().find(|list| list.name == name).map(|list| {
-            list.items.iter().filter(|item| item.status == status).collect()
-        })
-    }
-
-    pub fn get_lists(&self) -> &Vec<list::List> {
-        &self.lists
-    }
-
-    pub fn remove_list(&mut self, index: usize) {
-        self.lists.remove(index);
-
-        let mut stmt = self.db.conn.prepare("DELETE FROM lists WHERE rowid = ?").unwrap();
-        stmt.execute([format!("{}", index).as_str()]).unwrap();
-        stmt.finalize().unwrap();
-    }
+    // pub fn _add_item (&mut self, list_name: &str, item_content: &str) {
+    // }
+    //
+    // pub fn _remove_item (&mut self, list_name: &str, index: usize) {
+    // }
+    //
+    // pub fn _edit_item (&mut self, index: usize, new_content: &str, list_name: &str) {
+    // }
+    //
+    // pub fn _get_list_items(&self, name: &str) -> Option<Vec<list::Item>> {
+    // }
+    //
+    // pub fn _get_mut_list(&mut self, name: &str) -> Option<&mut list::List> {
+    // }
+    //
+    // pub fn _get_list_by_status(&self, name: &str, status: list::Status) -> Option<Vec<list::Item>> {
+    // }
+    //
+    // pub fn _get_lists(&self) -> &Vec<list::List> {
+    // }
+    //
+    // pub fn _remove_list(&mut self, index: usize) {
+    // }
 }

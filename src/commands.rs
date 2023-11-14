@@ -1,5 +1,5 @@
 use crate::manager;
-use crate::list::Status;
+use crate::list::{Status, Item};
 
 pub fn help () {
     println!("Usage: lm [command] [args]");
@@ -18,50 +18,33 @@ pub fn help () {
     println!("  help - Show this help message");
 }
 
-pub fn add (manager: &mut manager::Manager, name: &str) {
-    manager.add_list(name);
+// add
+pub fn _add (manager: &mut manager::Manager, name: &str) {
 }
 
-pub fn remove (manager: &mut manager::Manager, name: &str) {
-    let index = manager.lists.iter().position(|list| list.name == name).unwrap();
-    manager.remove_list(index);
-}
-
-pub fn list (manager: &manager::Manager) -> Vec<&str> {
-    let mut lists: Vec<&str> = Vec::new();
-    for list in manager.get_lists() {
-        lists.push(&list.name);
-    }
-    lists
-}
-
-pub fn edit_list (manager: &mut manager::Manager, list_name: &str, new_name: &str) {
-    let list = manager.get_mut_list(list_name).unwrap();
-    list.name = new_name.to_string();
-}
-
-pub fn add_item (manager: &mut manager::Manager, list_name: &str, item_content: &str) {
-    manager.add_item(list_name, item_content);
-}
-
-pub fn remove_item (manager: &mut manager::Manager, list_name: &str, item_content: &str) {
-    let list = manager.get_lists().iter().find(|list| list.name == list_name).unwrap();
-    let index = list.items.iter().position(|item| item.content == item_content).unwrap();
-    manager.remove_item(list_name, index);
-}
-
-pub fn edit_item (manager: &mut manager::Manager, list_name: &str, item_content: &str, new_content: &str) {
-    let list = manager.get_lists().iter().find(|list| list.name == list_name).unwrap();
-    let index = list.items.iter().position(|item| item.content == item_content).unwrap();
-    manager.edit_item(index, new_content, list_name);
-}
-
-pub fn get_item<'a> (manager: &'a manager::Manager, list_name: &str, item_content: &str) -> Option<&'a str> {
-    let list = manager.get_lists().iter().find(|list| list.name == list_name).unwrap();
-    let item = list.items.iter().find(|item| item.content == item_content).unwrap();
-    Some(&item.content)
-}
-
-pub fn get_list_by_status<'a> (manager: &'a manager::Manager, list_name: &str, status: Status) -> Vec<&'a str> {
-    manager.get_list_by_status(list_name, status).unwrap().iter().map(|item| item.content.as_str()).collect()
-}
+// pub fn _add_item (manager: &mut manager::Manager, list_name: &str, item_content: &str) {
+// }
+//
+// pub fn _remove (manager: &mut manager::Manager, name: &str) {
+// }
+//
+// pub fn _list (manager: &manager::Manager) -> Vec<&str> {
+// }
+//
+// pub fn _edit_list (manager: &mut manager::Manager, list_name: &str, new_name: &str) {
+// }
+//
+// pub fn _remove_item (manager: &mut manager::Manager, list_name: &str, item_content: &str) {
+// }
+//
+// pub fn _edit_item (manager: &mut manager::Manager, list_name: &str, item_content: &str, new_content: &str) {
+// }
+//
+// pub fn _get_item<'a> (manager: &'a manager::Manager, list_name: &str, item_content: &str) -> Option<&'a str> {
+// }
+//
+// pub fn _get_list_items (manager: &manager::Manager, list_name: &str) -> Vec<Item> {
+// }
+//
+// pub fn _get_list_by_status (manager: &manager::Manager, list_name: &str, status: Status) -> Vec<Item> {
+// }
