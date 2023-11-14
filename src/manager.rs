@@ -50,14 +50,12 @@ impl Manager {
     }
 
     pub fn add_item (&mut self, list_name: &str, item_content: &str) {
-        let list = self.get_mut_list(list_name).unwrap();
-        let item = list::Item::new(item_content.to_string(), "tmp".to_string(), list::Status::Todo);
-        list.items.push(item);
-
+        let created_at = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+        let item = list::Item::new(item_content.to_string(), created_at, list::Status::Todo);
         let index = self.lists.iter().position(|list| list.name == list_name).unwrap();
 
         let mut stmt = self.db.conn.prepare("INSERT INTO items (content, created_at, status, list_id) VALUES (?, ?, ?, ?)").unwrap();
-        stmt.execute([item_content, "tmp", "todo", format!("{}", index).as_str()]).unwrap();
+        stmt.execute([item.content, item.created_at, item.status.fmt(), index.to_string()]).unwrap();
         stmt.finalize().unwrap();
     }
 

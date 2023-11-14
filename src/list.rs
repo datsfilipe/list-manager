@@ -15,7 +15,7 @@ impl Status {
         }
     }
 
-    pub fn _fmt(&self) -> String {
+    pub fn fmt(&self) -> String {
         match self {
             Status::Todo => "todo".to_string(),
             Status::Doing => "doing".to_string(),
