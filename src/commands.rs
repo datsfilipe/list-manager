@@ -1,19 +1,53 @@
 use crate::{manager, list::Status};
+use textwrap::{fill,Options};
+use colored::Colorize;
 
-pub fn help () {
-    println!("Usage: lm [command] [args]");
-    println!("Commands:");
-    println!("  add [list] - Add a new list");
-    println!("  add [list] [item] - Add an item to a list");
-    println!("  remove [list] - Remove a list");
-    println!("  remove [list] [item] - Remove an item from a list");
-    println!("  edit [list] [name] - Edit a list name");
-    println!("  edit [list] [item] [content] - Edit an item in a list");
-    println!("  edit [list] [item] [status] - Edit an item status in a list");
-    println!("  list - List all lists");
-    println!("  list [list] - List all items in a list");
-    println!("  list [list] [status] - List all items in a list by status");
-    println!("  help - Show this help message");
+fn print_commands() {
+    let commands = vec![
+        ("add", "Add a list or an item"),
+        ("remove", "Remove a list or an item"),
+        ("edit", "Edit a list or an item"),
+        ("list", "List lists or items"),
+        ("help", "Show this help message")
+    ];
+    for (command, description) in commands {
+        println!("  {}: {}", command, fill(description, Options::new(40)));
+    }
+}
+
+fn print_params(command: &str) {
+    match command {
+        "add" => {
+            println!("  add [list_name] [item_content]");
+        },
+        "remove" => {
+            println!("  remove [list_name] [item_content]");
+        },
+        "edit" => {
+            println!("  edit [list_name] [new_name]");
+            println!("  edit [list_name] [item_content] [new_content]");
+            println!("  edit [list_name] [item_content] [new_status] (todo, doing, done)");
+        },
+        "list" => {
+            println!("  list");
+            println!("  list [list_name]");
+            println!("  list [list_name] [status] (list items by status)");
+        },
+        _ => println!("Invalid command"),
+    }
+}
+
+pub fn help() {
+    println!("{}", "Usage: list [command] [params]".bold().red());
+    println!("");
+    println!("{}", "Commands:".bold().red());
+    print_commands();
+    println!("");
+    println!("{}", "Params:".bold().red());
+    print_params("add");
+    print_params("remove");
+    print_params("edit");
+    print_params("list");
 }
 
 pub fn add(manager: &mut manager::Manager, args: &Vec<String>) {
