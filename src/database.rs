@@ -28,7 +28,7 @@ impl Database {
                 created_at TEXT NOT NULL,
                 status TEXT NOT NULL,
                 list_id INTEGER NOT NULL,
-                FOREIGN KEY (list_id) REFERENCES lists (id)
+                FOREIGN KEY (list_id) REFERENCES lists (id) ON DELETE CASCADE
             )",
             (),
         ).unwrap();
