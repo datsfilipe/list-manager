@@ -1,7 +1,12 @@
 [package]
-name = "lm"
+name = "list-manager"
 version = "0.1.0"
 edition = "2021"
+description = "Manage todo lists with zero overhead."
+license = "MIT"
+authors = ["datsfilipe"]
+homepage = "https://crates.io/crates/list-manager"
+repository = "https://github.com/datsfilipe/list-manager"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
