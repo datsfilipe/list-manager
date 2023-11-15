@@ -1,8 +1,13 @@
 use rusqlite::Connection;
 use crate::list::{Status, Item};
+use users::{get_user_by_uid, get_current_uid};
 use std::fs;
 
-const PATH: &str = "/home/dtsf/.config/list-manager/lists.db";
+fn get_path() -> String {
+    let uid = get_current_uid();
+    let user = get_user_by_uid(uid).unwrap();
+    format!("/home/{}/.config/list-manager", user.name().to_str().unwrap())
+}
 
 pub struct Database {
     pub conn: Connection,
@@ -10,8 +15,8 @@ pub struct Database {
 
 impl Database {
     pub fn new() -> Database {
-        fs::create_dir_all("/home/dtsf/.config/list-manager").unwrap();
-        let conn = Connection::open(PATH).unwrap();
+        fs::create_dir_all(get_path()).unwrap();
+        let conn = Connection::open(format!("{}/lists.db", get_path())).unwrap();
 
         conn.execute(
             "CREATE TABLE IF NOT EXISTS lists (
