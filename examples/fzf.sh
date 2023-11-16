@@ -9,6 +9,8 @@ list_lists() {
 
   if [ -n "$selected_option" ]; then
     list_items "$selected_option"
+  else
+    exit 0
   fi
 }
 
@@ -17,17 +19,19 @@ list_items() {
   del_cmd="list-manager remove $list_name {}"
   add_cmd="read 'REPLY?content: ' && echo \$REPLY | list-manager add $list_name \$REPLY"
   while true; do
-    options=("[back]" $(list-manager list "$list_name"))
+    options=("<--" $(list-manager list "$list_name"))
     selected_option=$(printf '%s\n' "${options[@]}" | fzf \
       --bind "ctrl-o:execute($del_cmd)" \
       --bind="ctrl-n:execute($add_cmd)")
 
-    if [ -z "$selected_option" ]; then
-      break
-    elif [ "$selected_option" == "[back]" ]; then
-      list_lists && break
+    if [ -n "$selected_option" ]; then
+      if [ "$selected_option" == "<--" ]; then
+        list_lists
+      else
+        open "$selected_option" "$list_name"
+      fi
     else
-      open "$selected_option" "$list_name" && break
+      exit 0
     fi
   done
 }
@@ -40,11 +44,15 @@ open() {
   else
     read -p "copy to clipboard/edit [c/e]: " -n 1 -r
     echo ""
-    if [[ $REPLY =~ ^[Ee]$ ]]; then
-      read -p "content/status: " -r
+    if [[ $REPLY =~ ^[Cc]$ ]]; then
+      echo "$item_content" | wl-copy
+    elif [[ $REPLY =~ ^[Ee]$ ]]; then
+      read -p "content/status [*/todo/doing/done]: " -r
+      echo ""
       list-manager edit "$list_name" "$item_content" "$REPLY"
     else
-      echo "$item_content" | wl-copy
+      echo "invalid option"
+      exit 0
     fi
   fi
 }
