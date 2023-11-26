@@ -1,10 +1,10 @@
 use rusqlite::Connection;
-use std::fs;
+use std::{env, fs};
 use uuid::Uuid;
 
 fn get_path() -> String {
-    let user = "dtsf";
-    format!("/home/{}/.config/list-manager", user)
+    let xdg_config_home = env::var("XDG_CONFIG_HOME").unwrap_or(format!("{}/.config", env::var("HOME").unwrap()));
+    format!("{}/list-manager", xdg_config_home)
 }
 
 pub struct Database {
