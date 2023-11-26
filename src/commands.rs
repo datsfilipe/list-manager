@@ -93,7 +93,7 @@ pub fn add(manager: &mut manager::Manager, args: &[String]) {
         1 => {
             manager.db.add_list(&args[0]);
 
-            print_status(true, " List added ");
+            print_status(true, " Lists ");
 
             let lists = manager.db.show_lists();
 
@@ -104,7 +104,7 @@ pub fn add(manager: &mut manager::Manager, args: &[String]) {
         2 => {
             manager.db.add_item(&args[0], &args[1]);
 
-            print_status(true, format!(" Items in {} ", &args[0]).as_str());
+            print_status(true, format!(" Items ({}) ", &args[0]).as_str());
 
             let items = manager.db.list_items(&args[0]);
 
@@ -117,7 +117,7 @@ pub fn add(manager: &mut manager::Manager, args: &[String]) {
 }
 
 pub fn list(_manager: &manager::Manager, args: &[String]) {
-    print_status(true, format!(" Items in {} ", &args[0]).as_str());
+    print_status(true, format!(" Items ({}) ", &args[0]).as_str());
 
     let items = _manager.db.list_items(&args[0]);
 
@@ -145,7 +145,7 @@ pub fn delete(manager: &mut manager::Manager, args: &[String]) {
         2 => {
             manager.db.delete_item(&args[0], &args[1]);
 
-            print_status(true, format!(" Items in {} ", &args[0]).as_str());
+            print_status(true, format!(" Items ({}) ", &args[0]).as_str());
 
             let items = manager.db.list_items(&args[0]);
 
