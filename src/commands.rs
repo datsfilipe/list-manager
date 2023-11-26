@@ -131,7 +131,7 @@ pub fn delete(manager: &mut manager::Manager, args: &[String]) {
         1 => {
             manager.db.delete_list(&args[0]);
 
-            print_status(true, " List deleted ");
+            print_status(false, " List deleted ");
 
             let lists = manager.db.show_lists();
             if lists.len() == 0 {
@@ -145,9 +145,12 @@ pub fn delete(manager: &mut manager::Manager, args: &[String]) {
         2 => {
             manager.db.delete_item(&args[0], &args[1]);
 
-            print_status(true, format!(" Items ({}) ", &args[0]).as_str());
+            print_status(false, " Item deleted ");
 
             let items = manager.db.list_items(&args[0]);
+            if items.len() == 0 {
+                return;
+            }
 
             for index in 0..items.len() {
                 println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, items[index]);
@@ -158,12 +161,16 @@ pub fn delete(manager: &mut manager::Manager, args: &[String]) {
 }
 
 pub fn get(manager: &manager::Manager, args: &[String]) {
-    let item = manager.db.get_items(&args[0]);
+    let items = manager.db.get_items(&args[0]);
 
     print_status(true, format!(" Result ({}) ", &args[0]).as_str());
 
-    for index in 0..item.len() {
-        println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, item[index]);
+    if items.len() == 0 {
+        println!("  {}{}{}{}", color::Fg(color::Red), "Oops", style::Reset, " ~ There are no items");
+    }
+
+    for index in 0..items.len() {
+        println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, items[index]);
     }
 }
 
@@ -171,6 +178,10 @@ pub fn show(_manager: &manager::Manager) {
     print_status(true, " Lists ");
 
     let lists = _manager.db.show_lists();
+
+    if lists.len() == 0 {
+        println!("  {}{}{}{}", color::Fg(color::Red), "Oops", style::Reset, " ~ There are no lists");
+    }
 
     for index in 0..lists.len() {
         println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, lists[index]);
