@@ -126,8 +126,35 @@ pub fn list(_manager: &manager::Manager, args: &[String]) {
     }
 }
 
-pub fn delete(_manager: &mut manager::Manager, args: &[String]) {
-    println!("{}", args[0]);
+pub fn delete(manager: &mut manager::Manager, args: &[String]) {
+    match args.len() {
+        1 => {
+            manager.db.delete_list(&args[0]);
+
+            print_status(true, " List deleted ");
+
+            let lists = manager.db.show_lists();
+            if lists.len() == 0 {
+                return;
+            }
+
+            for index in 0..lists.len() {
+                println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, lists[index]);
+            }
+        },
+        2 => {
+            manager.db.delete_item(&args[0], &args[1]);
+
+            print_status(true, format!(" Items in {} ", &args[0]).as_str());
+
+            let items = manager.db.list_items(&args[0]);
+
+            for index in 0..items.len() {
+                println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, items[index]);
+            }
+        },
+        _ => {},
+    }
 }
 
 pub fn get(_manager: &manager::Manager, args: &[String]) {

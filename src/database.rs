@@ -110,4 +110,45 @@ impl Database {
         
         result
     }
+
+    pub fn delete_list(&self, list_name: &str) {
+        let mut stmt = self.conn.prepare("SELECT id FROM lists WHERE name = ?1").unwrap();
+        let query = stmt.query_map([list_name], |row| {
+            let id: [u8; 16] = row.get(0)?;
+
+            Ok(id)
+        }).unwrap();
+
+        let list_id: [u8; 16] = query.last().unwrap().unwrap();
+
+        self.conn.execute(
+            "DELETE FROM lists WHERE id = ?1",
+            &[&list_id],
+        ).unwrap();
+    }
+
+    pub fn delete_item(&self, list_name: &str, item_name: &str) {
+        let mut stmt = self.conn.prepare("SELECT id FROM lists WHERE name = ?1").unwrap();
+        let query = stmt.query_map([list_name], |row| {
+            let id: [u8; 16] = row.get(0)?;
+
+            Ok(id)
+        }).unwrap();
+
+        let list_id: [u8; 16] = query.last().unwrap().unwrap();
+
+        let mut stmt = self.conn.prepare("SELECT id FROM items WHERE list_id = ?1 AND content = ?2").unwrap();
+        let query = stmt.query_map((list_id, item_name), |row| {
+            let id: [u8; 16] = row.get(0)?;
+
+            Ok(id)
+        }).unwrap();
+
+        let item_id: [u8; 16] = query.last().unwrap().unwrap();
+
+        self.conn.execute(
+            "DELETE FROM items WHERE id = ?1",
+            &[&item_id],
+        ).unwrap();
+    }
 }
