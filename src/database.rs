@@ -1,5 +1,6 @@
 use rusqlite::Connection;
 use std::fs;
+use uuid::Uuid;
 
 fn get_path() -> String {
     let user = "dtsf";
@@ -17,7 +18,7 @@ impl Database {
 
         conn.execute(
             "CREATE TABLE IF NOT EXISTS lists (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id BLOB PRIMARY KEY,
                 name TEXT NOT NULL
             )",
             (),
@@ -25,7 +26,7 @@ impl Database {
 
         conn.execute(
             "CREATE TABLE IF NOT EXISTS items (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id BLOB PRIMARY KEY,
                 content TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 list_id INTEGER NOT NULL,
@@ -35,5 +36,38 @@ impl Database {
         ).unwrap();
 
         Database { conn }
+    }
+
+    fn generate_uuid() -> [u8; 16] {
+        let uuid = Uuid::new_v4();
+        *uuid.as_bytes()
+    }
+
+    pub fn show_lists(&self) -> Vec<String> {
+        let mut stmt = self.conn.prepare("SELECT * FROM lists").unwrap();
+        let lists = stmt.query_map([], |row| {
+            let id: [u8; 16] = row.get(0)?;
+            let name: String = row.get(1)?;
+
+            Ok((id, name))
+        }).unwrap();
+
+        let mut result = Vec::new();
+
+        for list in lists {
+            let (_, name) = list.unwrap();
+            result.push(name);
+        }
+
+        result
+    }
+
+    pub fn add_list(&self, name: &str) {
+        let uuid = Database::generate_uuid();
+
+        self.conn.execute(
+            "INSERT INTO lists (id, name) VALUES (?1, ?2)",
+            (&uuid, &name),
+        ).unwrap();
     }
 }

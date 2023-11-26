@@ -1,6 +1,18 @@
 use crate::manager;
 use termion::{color, style};
 
+fn print_status(status: bool, message: &str) {
+    if status {
+        println!("");
+        println!("{}{}{}{}", color::Bg(color::Green), color::Fg(color::Black), message, style::Reset);
+        println!("");
+    } else {
+        println!("");
+        println!("{}{}{}{}", color::Bg(color::Red), color::Fg(color::Black), message, style::Reset);
+        println!("");
+    }
+}
+
 fn print_commands() {
     let commands = vec![
         ("help", "Show this help message"),
@@ -76,17 +88,38 @@ pub fn help() {
     println!("");
 }
 
-pub fn add(manager: &mut manager::Manager, cmd: &str, args: &[String]) {
+pub fn add(manager: &mut manager::Manager, args: &[String]) {
+    match args.len() {
+        1 => {
+            manager.db.add_list(&args[0]);
+
+            print_status(true, " List added ");
+
+            let lists = manager.db.show_lists();
+
+            for index in 0..lists.len() {
+                println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, lists[index]);
+            }
+        },
+        2 => {
+
+        },
+        _ => {},
+    }
 }
 
-pub fn delete(manager: &mut manager::Manager, cmd: &str, args: &[String]) {
+pub fn delete(_manager: &mut manager::Manager, args: &[String]) {
+    println!("{}", args[0]);
 }
 
-pub fn list(manager: &manager::Manager, cmd: &str, args: &[String]) {
+pub fn list(_manager: &manager::Manager, args: &[String]) {
+    println!("{}", args[0]);
 }
 
-pub fn get(manager: &manager::Manager, cmd: &str, args: &[String]) {
+pub fn get(_manager: &manager::Manager, args: &[String]) {
+    println!("{}", args[0]);
 }
 
-pub fn show(manager: &manager::Manager, cmd: &str) {
+pub fn show(_manager: &manager::Manager) {
+    println!("");
 }
