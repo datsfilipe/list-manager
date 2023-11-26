@@ -35,6 +35,11 @@ impl Database {
             (),
         ).unwrap();
 
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS item_content ON items (content)",
+            (),
+        ).unwrap();
+
         Database { conn }
     }
 
@@ -150,5 +155,18 @@ impl Database {
             "DELETE FROM items WHERE id = ?1",
             &[&item_id],
         ).unwrap();
+    }
+
+    pub fn get_items(&self, item_name: &str) -> Vec<String> {
+        let mut stmt = self.conn.prepare("SELECT content FROM items WHERE content LIKE '%' || ?1 || '%'").unwrap();
+        let items = stmt.query_map([item_name], |row| {
+            let content: String = row.get(0)?;
+
+            Ok(content)
+        }).unwrap();
+
+        let result: Vec<String> = items.map(|item| item.unwrap()).collect();
+        
+        result
     }
 }

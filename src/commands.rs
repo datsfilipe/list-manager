@@ -157,8 +157,14 @@ pub fn delete(manager: &mut manager::Manager, args: &[String]) {
     }
 }
 
-pub fn get(_manager: &manager::Manager, args: &[String]) {
-    println!("{}", args[0]);
+pub fn get(manager: &manager::Manager, args: &[String]) {
+    let item = manager.db.get_items(&args[0]);
+
+    print_status(true, format!(" Result ({}) ", &args[0]).as_str());
+
+    for index in 0..item.len() {
+        println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, item[index]);
+    }
 }
 
 pub fn show(_manager: &manager::Manager) {
