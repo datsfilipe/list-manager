@@ -168,5 +168,11 @@ pub fn get(manager: &manager::Manager, args: &[String]) {
 }
 
 pub fn show(_manager: &manager::Manager) {
-    println!("");
+    print_status(true, " Lists ");
+
+    let lists = _manager.db.show_lists();
+
+    for index in 0..lists.len() {
+        println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, lists[index]);
+    }
 }
