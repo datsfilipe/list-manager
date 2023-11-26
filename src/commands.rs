@@ -102,14 +102,21 @@ pub fn add(manager: &mut manager::Manager, args: &[String]) {
             }
         },
         2 => {
-            manager.db.add_item(&args[0], &args[1]);
+            let result = manager.db.add_item(&args[0], &args[1]);
 
-            print_status(true, format!(" Items ({}) ", &args[0]).as_str());
+            match result {
+                Ok(_) => {
+                    print_status(true, format!(" Items ({}) ", &args[0]).as_str());
 
-            let items = manager.db.list_items(&args[0]);
+                    let items = manager.db.list_items(&args[0]);
 
-            for index in 0..items.len() {
-                println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, items[index]);
+                    for index in 0..items.len() {
+                        println!("  {}{}{}{}", color::Fg(color::Cyan), (index + 1).to_string() + ". ", style::Reset, items[index]);
+                    }
+                },
+                Err(_) => {
+                    print_status(false, format!(" {} ", result.unwrap_err()).as_str());
+                },
             }
         },
         _ => {},

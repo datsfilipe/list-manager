@@ -30,7 +30,7 @@ impl Database {
         conn.execute(
             "CREATE TABLE IF NOT EXISTS items (
                 id BLOB PRIMARY KEY,
-                content TEXT NOT NULL,
+                content TEXT NOT NULL UNIQUE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 list_id INTEGER NOT NULL,
                 FOREIGN KEY (list_id) REFERENCES lists (id) ON DELETE CASCADE
@@ -79,7 +79,7 @@ impl Database {
         ).unwrap();
     }
 
-    pub fn add_item(&self, list_name: &str, content: &str) {
+    pub fn add_item(&self, list_name: &str, content: &str) -> Result<(), String> {
         let uuid = Database::generate_uuid();
 
         let mut stmt = self.conn.prepare("SELECT id FROM lists WHERE name = ?1").unwrap();
@@ -91,10 +91,19 @@ impl Database {
 
         let list_id: [u8; 16] = query.last().unwrap().unwrap();
 
-        self.conn.execute(
+        let result = self.conn.execute(
             "INSERT INTO items (id, content, list_id) VALUES (?1, ?2, ?3)",
             (&uuid, &content, &list_id),
-        ).unwrap();
+        );
+
+        match result {
+            Ok(_) => {
+                return Ok(());
+            },
+            Err(_) => {
+                return Err(format!("Item '{}' already exists in list '{}'", content, list_name));
+            },
+        }
     }
 
     pub fn list_items(&self, list_name: &str) -> Vec<String> {
