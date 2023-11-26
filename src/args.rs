@@ -34,11 +34,7 @@ fn verify_args(args: &Vec<String>) -> Message {
         },
         4 => {
             if args[1] == "add" || args[1] == "delete" {
-                if args[2] == "--list" || args[2] == "--item" {
-                    Message::ValidArguments
-                } else {
-                    Message::InvalidArguments
-                }
+                Message::ValidArguments
             } else {
                 Message::InvalidArguments
             }

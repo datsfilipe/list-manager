@@ -28,7 +28,7 @@ impl Database {
             "CREATE TABLE IF NOT EXISTS items (
                 id BLOB PRIMARY KEY,
                 content TEXT NOT NULL,
-                created_at TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 list_id INTEGER NOT NULL,
                 FOREIGN KEY (list_id) REFERENCES lists (id) ON DELETE CASCADE
             )",
@@ -70,4 +70,23 @@ impl Database {
             (&uuid, &name),
         ).unwrap();
     }
+
+    pub fn add_item(&self, list_name: &str, content: &str) {
+        let uuid = Database::generate_uuid();
+
+        let mut stmt = self.conn.prepare("SELECT id FROM lists WHERE name = ?1").unwrap();
+        let query = stmt.query_map([list_name], |row| {
+            let id: [u8; 16] = row.get(0)?;
+
+            Ok(id)
+        }).unwrap();
+
+        let list_id: [u8; 16] = query.last().unwrap().unwrap();
+
+        self.conn.execute(
+            "INSERT INTO items (id, content, list_id) VALUES (?1, ?2, ?3)",
+            (&uuid, &content, &list_id),
+        ).unwrap();
+    }
+
 }

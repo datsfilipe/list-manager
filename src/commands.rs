@@ -102,6 +102,7 @@ pub fn add(manager: &mut manager::Manager, args: &[String]) {
             }
         },
         2 => {
+            manager.db.add_item(&args[0], &args[1]);
 
         },
         _ => {},
