@@ -1,5 +1,4 @@
 mod args;
-mod list;
 mod manager;
 mod commands;
 mod database;
@@ -7,7 +6,7 @@ mod database;
 use std::env;
 
 fn main() {
-    let mut _manager = manager::Manager::new();
+    let mut manager = manager::Manager::new();
 
     let args: Vec<String> = env::args().collect();
     if !args::validate_input(&args) {
@@ -16,10 +15,11 @@ fn main() {
 
     match &args[1][..] {
         "help" => commands::help(),
-        "add" => commands::add(&mut _manager, &args),
-        "remove" => commands::remove(&mut _manager, &args),
-        "edit" => commands::edit(&mut _manager, &args),
-        "list" => commands::list(&mut _manager, &args),
-        _ => println!("Invalid command"),
+        "show" => commands::show(&manager, &args[1]),
+        "add" => commands::add(&mut manager, &args[1], &args[2..]),
+        "delete" => commands::delete(&mut manager, &args[1], &args[2..]),
+        "list" => commands::list(&mut manager, &args[1], &args[2..]),
+        "get" => commands::get(&mut manager, &args[1], &args[2..]),
+        _ => println!("Urecognized argument: {}", &args[1]),
     }
 }
