@@ -89,4 +89,25 @@ impl Database {
         ).unwrap();
     }
 
+    pub fn list_items(&self, list_name: &str) -> Vec<String> {
+        let mut stmt = self.conn.prepare("SELECT id FROM lists WHERE name = ?1").unwrap();
+        let query = stmt.query_map([list_name], |row| {
+            let id: [u8; 16] = row.get(0)?;
+
+            Ok(id)
+        }).unwrap();
+
+        let list_id: [u8; 16] = query.last().unwrap().unwrap();
+
+        let mut stmt = self.conn.prepare("SELECT content FROM items WHERE list_id = ?1").unwrap();
+        let items = stmt.query_map([list_id], |row| {
+            let content: String = row.get(0)?;
+
+            Ok(content)
+        }).unwrap();
+
+        let result: Vec<String> = items.map(|item| item.unwrap()).collect();
+        
+        result
+    }
 }
