@@ -16,6 +16,9 @@ impl Database {
         fs::create_dir_all(get_path()).unwrap();
         let conn = Connection::open(format!("{}/lists.db", get_path())).unwrap();
 
+        conn.execute("PRAGMA synchronous = NORMAL", ()).unwrap();
+        conn.execute("PRAGMA temp_store = MEMORY", ()).unwrap();
+
         conn.execute(
             "CREATE TABLE IF NOT EXISTS lists (
                 id BLOB PRIMARY KEY,
