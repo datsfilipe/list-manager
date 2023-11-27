@@ -2,6 +2,7 @@ mod args;
 mod manager;
 mod commands;
 mod database;
+mod tests;
 
 use std::env;
 
