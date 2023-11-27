@@ -24,7 +24,7 @@ fn print_commands() {
     ];
 
     for (command, description) in commands {
-        println!("  {}{}{} - {}", color::Fg(color::Green), command, style::Reset, description);
+        println!("  {}{}{} - {}", color::Fg(color::Cyan), command, style::Reset, description);
     }
 }
 
